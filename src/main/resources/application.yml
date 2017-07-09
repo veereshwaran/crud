@@ -1,0 +1,72 @@
+# You can choose in which port you deploy your application
+server:
+  port: 6830
+
+# If you not provide any spring profile, it will take dev-postgres
+spring:
+  profiles.active: default
+
+spring:
+  profiles: dev-postgres
+# Datasource Configuration
+spring.datasource:
+    driverClassName: org.postgresql.Driver
+    url: "jdbc:postgresql://${CRUD_DB_HOST:localhost}:${CRUD_DB_PORT:5432}/${CRUDE_DB:explorerdb}?currentSchema=${CRUD_DB_SCHEMA:public}"
+    username: ${CRUD_DB_USER:postgres}
+    password: ${CRUD_DB_PASSWORD:dbpassword}
+spring.jpa:
+        # Specify the DBMS
+        database: PostgreSQL
+        # Show or not log for each sql query
+        show-sql: false
+        # Hibernate settings are prefixed with spring.jpa.hibernate.*
+        hibernate:
+            ddl-auto: validate # validate | update | create | create-drop
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+            naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
+            show_sql: false
+            format_sql: true
+# Flyway configuartion
+flyway.baseline-on-migrate: true
+---
+
+spring:
+  profiles: dev-mysql
+# Datasource Configuration
+spring.datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: "jdbc:mysql://{CRUD_DB_HOST}:CRUD_DB_PORT}/{CRUD_DB_SCHEMA}"
+    username: ${EXPLORER_DB_USER:mysql}
+    password: ${EXPLORER_DB_PASSWORD:password}
+spring.jpa:
+        # Specify the DBMS
+        database: MySQL
+        # Show or not log for each sql query
+        show-sql: false
+        # Hibernate settings are prefixed with spring.jpa.hibernate.*
+        hibernate:
+            ddl-auto: validate # validate | update | create | create-drop
+            dialect: org.hibernate.dialect.MySQLDialect
+            naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
+            show_sql: false
+            format_sql: true
+# Flyway configuartion
+flyway.baseline-on-migrate: true
+
+---
+
+#This profile include in memory database configuration and disable flyway
+spring:
+  profiles: test
+spring.datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:MY_APP;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:db/migration/test/init_tests.sql';
+    username: sa
+    password:
+spring.jpa:
+    hibernate:
+        ddl-auto: update
+        dialect: org.hibernate.dialect.H2Dialect
+flyway.enabled : false
+#flyway.schemas : PUBLIC
+---
